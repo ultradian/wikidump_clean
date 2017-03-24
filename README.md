@@ -1,9 +1,18 @@
 # textAnalysis
 This repository is for stuff for processing wikipedia text.  We start with Wikipedia XML dump files.  There are already parsing libraries such as [Parse::MediaWikiDump](http://search.cpan.org/dist/Parse-MediaWikiDump/) for Perl.  There is a nice comment about this library as well as the impossibility of parsing Wikipedia XML at http://stackoverflow.com/questions/2588795/which-module-should-i-use-to-parse-mediawiki-text-into-a-perl-data-structure.
 
-Nonetheless, my goal is to get **a corpus of English sentences for training machine learning algorithms**.  I'm not going to parse for higher level structures, but might later in my learning algorithms.  I really just want to text process to get rid of stuff that would make the text too complicated.  Here, I have some notes about the code I've created for processing. I welcome feedback about the code, other issues that could/should be covered.
+Nonetheless, my goal is to get **a corpus of English sentences for training machine learning algorithms**.  I'm not going to parse for higher level structures, but might later in my learning algorithms.  I really just want a simple text process to get rid of stuff that would make the text too complicated.  Here, I have some notes about the code I've created for processing. I welcome feedback about the code, other issues that could/should be covered.
 
-## Location:
+## Organization
+* [Getting Wiki dump files](#getting-wiki-dump-files)
+* [Wikipedia XML](#wikipedia-xml)
+* [Data File]{#data-file) for testing/extraction
+* [Cleaning scripts](#cleaning-scripts) for processing the Data File
+* [Script comparisons](#script-comparison): tests of speed of different scripts
+* [Cleaned Data](#cleaned-data)
+
+
+## Getting Wiki dump files
 You can download dump files from https://dumps.wikimedia.org/. My focus is enwiki, the English wikipedia. File names include
 * pages-articles.xml
 * abstract.xml
@@ -14,7 +23,8 @@ each have the date of the dump included in the name.  If you have a big, fast sy
 ## Wikipedia XML
 I'm learning a little about how wikipedia XML works.  Here are some basics:
 XML is organized in `<page>`s like this:
-```
+
+```XML
   <page>
     <title>AppliedEthics</title>
     <id>8</id>
@@ -31,8 +41,10 @@ XML is organized in `<page>`s like this:
     </revision>
   </page>
 ```
+
 or this:
-```
+
+```XML
   <page>
     <title>Albedo</title>
     <id>39</id>
@@ -48,7 +60,7 @@ The '''albedo''' of an object is the extent to which it diffusely reflects light
 the ratio of [[diffuse reflection|diffusely reflected]] to incident [[electromagnetic radiation]]. It is a [[Dimensionless number|unitless]] measure indicative of a surface's or body's diffuse [[reflectivity]]. The word is derived from [[Latin]] ''albedo'' &quot;whiteness&quot;, in turn from ''albus'' &quot;white&quot;. The range of possible values is from 0 (dark) to 1 (bright).
 [[Image:Albedo-e hg.svg|thumb|Percentage of diffusely reflected sun light in relation to various surface conditions of the earth]]
 
-The albedo is an important concept in [[climatology]] and [[astronomy]]. In climatology it is sometimes expressed as a percentage. Its value depends on the [[frequency]] of radiation considered: unqualified, it usually refers to some appropriate average across the spectrum of [[visible light]]. In general, the albedo depends on the direction and directional distribution of incoming radiation. Exceptions are [[Lambertian]] surfaces, which scatter radiation in all directions in a cosine function, so their albedo does not depend on the incoming distribution. In realistic cases, a [[bidirectional reflectance distribution function]] (BRDF) is required to characterize the scattering properties of a surface accurately, although albedos are a very useful first approximation.
+The albedo is an important concept in [[climatology]] and [[astronomy]]. In climatology it is sometimes expressed as a percentage. Its value depends on the [[frequency]] of radiation considered: unqualified, it usually refers to some appropriate average across the spectrum of [[visible light]]. In general, the albedo depends on the direction and directional distribution of incoming radiation. Exceptions are [[Lambertian]] surfaces, which scatter radiation in all directions in a cosine function, so their albedo does not depend on the incoming distribution. In realistic cases, a [[bidirectional reflectance distribution function]] (BRDF) is required to characterize the scattering properties of a surface accurately, although albedos are a very useful first approximation.C
 
 ==Terrestrial albedo==
 {| class=&quot;wikitable&quot; style=&quot;float: right;&quot;
@@ -245,9 +257,10 @@ Another albedo-related effect on the climate is from black carbon particles. The
     </revision>
   </page>
 ```
+
 There is a lot of metadata in the XML tags, but I'm only interested in what is in the `<text>` tags.  There are a lot of the `#REDIRECT` pages which I don't care about for this project.
 
-Note that within the text, there are no tags, but rather HTML entity codes like `&gt;` and `&lt;` for `>` and `<`.  These codes create HTML within the text, including tags such as `<blockquote>`, `<gallery>`, `<math>` and so on. This is mixed with a special Wikimedia markdown where `'''` indicates `'''`**bold**`'''`, `''` goes around `''`*italics*`''`, `==` goes around a `==`level 2 heading`==`, and `[[` goes around a `[[`_link_`]]`.
+Note that within the text, there are no tags, but rather **HTML entity codes** like `&gt;` and `&lt;` for `>` and `<`.  These codes create HTML within the text, including tags such as `<blockquote>`, `<gallery>`, `<math>` and so on. This is mixed with a special **Wikimedia markdown** where `'''` indicates `'''`**bold**`'''`, `''` goes around `''`*italics*`''`, `==` goes around a `==`level 2 heading`==`, and `[[` goes around a `[[`_link_`]]`.
 
 If that isn't complicated enough, there are **Templates** indicated by `{{`brackets`}}` which are automatcally translated by the Wikipedia engine to provide standardized mechanisms for presenting particular types of information.  For example, the [convert template](https://en.wikipedia.org/wiki/Template:Convert) takes a number and a pair of units and converts from one to another.  Thus, `{{convert|1|lb|kg}}` displays as `1 pound (0.45 kg)`.  The engine can accomdate a lot of different rules which you should follow the link if you are interested.  Other examples would be: `{{convert|5.56|cm|in|frac=16}}` producing ` 5.56 centimetres (2 3⁄16 in)`or `{{convert|4|acre||disp=preunit|planted |reforested-}}` producing `4 planted acres (1.6 reforested-ha)`.
 
@@ -259,6 +272,11 @@ Getting back to our `enwiki-20080312-pages-articles.xml.bz2`data file now, a qui
 * 259,427,121 lines
 * 6,552,490 `</page>` tags; of these, the longest contains 4,380,421 characters.
 
-For development and quick testing, I have created a smaller version using the first 500 pages. [`enwiki-20080312-pages-articles-short.xml`]()  Its filesize is only 7MB.  
+For development and quick testing, I have created a smaller version using the first 500 pages. [`enwiki-20080312-pages-articles-short.xml`](https://github.com/ultradian/textAnalysis/blob/master/enwiki-20080312-pages-articles-short.xml)  Its filesize is only 7MB.  
 
 ## Cleaning scripts
+I first created a cleaning script in Perl, [`clean.pl`](https://github.com/ultradian/textAnalysis/blob/master/clean.pl) since that is the kind of thing that Perl was made for.  After I built it, I got to thinking about whether a program in [Julia](http://julialang.org/) would be faster, since speed is one of its goals.  So I created an equivalent script, [`clean.jl`](https://github.com/ultradian/textAnalysis/blob/master/clean.jl).  I then got some [great input](http://stackoverflow.com/questions/42891650/can-you-preallocate-space-for-a-string-in-julia/42972984#42972984) from [Dan Getz](http://stackoverflow.com/users/3580870/dan-getz) and the suggestion I should do some testing.
+
+## Script comparisons
+
+## Cleaned Data
