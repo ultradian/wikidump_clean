@@ -6,7 +6,7 @@ Nonetheless, my goal is to get **a corpus of English sentences for training mach
 ## Organization
 * [Getting Wiki dump files](#getting-wiki-dump-files)
 * [Wikipedia XML](#wikipedia-xml)
-* [Data File]{#data-file) for testing/extraction
+* [Data File](#data-file) for testing/extraction
 * [Cleaning scripts](#cleaning-scripts) for processing the Data File
 * [Script comparisons](#script-comparison): tests of speed of different scripts
 * [Cleaned Data](#cleaned-data)
