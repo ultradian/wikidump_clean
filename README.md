@@ -266,6 +266,8 @@ If that isn't complicated enough, there are **Templates** indicated by `{{`brack
 
 Other common templates include the [IPA template](https://en.wikipedia.org/wiki/Template:IPA), the [Lang template](https://en.wikipedia.org/wiki/Template:Lang), and the ubiquitous [Infobox](https://en.wikipedia.org/wiki/Help:Infobox).
 
+If you want a comprehensive summary, look at the [Wikipedia Manual of Style](https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style).
+
 ## Data File
 Getting back to our `enwiki-20080312-pages-articles.xml.bz2`data file now, a quick examination shows that it has:
 * 16.14 GB filesize
@@ -279,4 +281,9 @@ I first created a cleaning script in Perl, [`clean.pl`](https://github.com/ultra
 
 ## Script comparisons
 
+
 ## Cleaned Data
+
+[<img style="float: left;" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png">](http://creativecommons.org/licenses/by-sa/4.0/)  
+
+Licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
