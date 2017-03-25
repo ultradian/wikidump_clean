@@ -277,12 +277,13 @@ Getting back to our `enwiki-20080312-pages-articles.xml.bz2`data file now, a qui
 For development and quick testing, I have created a smaller version using the first 500 pages. [`enwiki-20080312-pages-articles-short.xml`](https://github.com/ultradian/textAnalysis/blob/master/enwiki-20080312-pages-articles-short.xml)  Its filesize is only 7MB.  
 
 ## Cleaning scripts
-I first created a cleaning script in Perl, [`clean.pl`](https://github.com/ultradian/textAnalysis/blob/master/clean.pl) since that is the kind of thing that Perl was made for.  After I built it, I got to thinking about whether a program in [Julia](http://julialang.org/) would be faster, since speed is one of its goals.  So I created an equivalent script, [`clean.jl`](https://github.com/ultradian/textAnalysis/blob/master/clean.jl).  I then got some [great input](http://stackoverflow.com/questions/42891650/can-you-preallocate-space-for-a-string-in-julia/42972984#42972984) from [Dan Getz](http://stackoverflow.com/users/3580870/dan-getz) and the suggestion I should do some testing.
+I first created a cleaning script in Perl, [`clean.pl`](https://github.com/ultradian/textAnalysis/blob/master/clean.pl) since that is the kind of thing that Perl was made for.  After I built it, I got to thinking about whether a program in [Julia](http://julialang.org/) would be faster, since speed is one of its goals.  So I created an equivalent script, [`clean.jl`](https://github.com/ultradian/textAnalysis/blob/master/clean.jl).  I then got some [great input](http://stackoverflow.com/questions/42891650/can-you-preallocate-space-for-a-string-in-julia/42972984#42972984) from [Dan Getz](http://stackoverflow.com/users/3580870/dan-getz) about how to speed up the Julia code and the suggestion I should do some testing.
 
 ## Script comparisons
-
+I'm not working on the timing until I figure out why the two scripts have different results.  You can examine them yourself Perl = [enwiki2008-shortp.txt](enwiki2008-shortp.txt) and Julia = [enwiki2008-shortj.txt](enwiki2008-shortj.txt)
 
 ## Cleaned Data
+The Perl and Julia versions both produce nice text, although further processing might be needed, depending on your application.  For example, you may need to remove quotation marks.  Some lines do not start with capital letters as the initial words were cut off.  Numbers are still present. References to images and tables that were removed are still present, like "(see graph)".
 
 [<img style="float: left;" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png">](http://creativecommons.org/licenses/by-sa/4.0/)  
 
