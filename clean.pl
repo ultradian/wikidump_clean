@@ -18,20 +18,23 @@ while (<>) {
     # clean text
     $text =~ s/\{\|.+?\|\}//sg;  # remove tables
     $text =~ s/^\[\[Category:[^\]\n]+?\]\]//smgi;  # remove Categories
+    $text =~ s/^\[\[Category:[^\]\n]+?\]\]\z//smgi;  # some end with </text>
     $text =~ s/^\[\[[^\[\]\n]+?\]\]\n//smg;    # remove link lines
     $text =~ s/^\[\[[a-z\-]+?:.+?\]\]\n//smg;    # remove translation
-    $text =~ s/^\[\[[a-z\-]+?:.+?\]\]\z//smg;    # some end with <text>
-    # really this needs to be done recursively to manage embedded links
-    $text =~ s/\[\[Image:[^\[]+?\]\]//sgi;  # remove images without embedded
-    $text =~ s/\[\[Image:[^\[]+?\[\[.+?\]\][^\[]+?\]\]//sgi;  # remove images with embedded
+    $text =~ s/^\[\[[a-z\-]+?:.+?\]\]\z//smg;    # some end with </text>
     
-    $text =~ s/\[\[[^\|\[\]]+?\|(.+?)\]\]/$1/sg;  # links[[a|a]] without embedded
-    $text =~ s/\[\[([^\[\]]+?)\]\]/$1/sg;  # unnamed links[[]] without embedded
-    $text =~ s/\[http[^ ]+?([^\]])*?\]/$1/sgi;  # http links[]
+    $text =~ s/\[http\S+?\]//sgi;  # http links[] without anchor
+    $text =~ s/\[http\S+?\s+?(.*?)\]/$1/sgi;  # http links[]
 
+    # is there a better way to manage embedded links?
+    # would still over reach with .+?\]\]
+    $text =~ s/\[\[Image:[^\[]+?\]\]//sgi;  # remove images without embedded
 
+    $text =~ s/\[\[[^\|\[]+?\|([^\[]+?)\]\]/$1/sg;  # links[[a|a]] without embedded
+    $text =~ s/\[\[([^\|\[]+?)\]\]/$1/sg;  # unnamed links[[]] without embedded
+    $text =~ s/\[\[Image:[^\[]+?\]\]//sgi;  # remove images after embedded removed
+    
     ## templates
-    $text =~ s/\{\{cite[^\{]+?\}\}//sgi;	#remove cite
     # take first number and first measure of convert
     $text =~ s/\{\{convert\|([^\|]+?)\|(.+?)(?:\}\}|\|[^\}]+?\}\})/$1 $2/sgi;
     $text =~ s/\{\{IPA\|(.+?)\}\}/$1/sgi;	#IPA
@@ -39,8 +42,9 @@ while (<>) {
     $text =~ s/\{\{lang\|[^\|]+?\|([^\}]+?)\}\}/$1/sgi;	#lang
     $text =~ s/\{\{Unicode\|(.+?)\}\}/$1/sgi;	#Unicode   
     $text =~ s/\{\{Audio\|[^\|]+?\|(.+?)\}\}/$1/sgi;	#audio title   
-    $text =~ s/\{\{cquote\|([^\{]+?)\}\}/"$1"/sgi;	#cquote without embedded
+    $text =~ s/\{\{cquote\|(.+?)\}\}/"$1"/sgi;	#cquote ignore embedded
     # get rid of rest
+    # includes wikiquote, wikisource, cite, date, infobox, main
     $text =~ s/\{\{([^\{\}]+?)\}\}//sg;	# only unnested
     $text =~ s/\{\{([^\{\}]+?)\}\}//sg;	# another round
 
@@ -99,26 +103,20 @@ while (<>) {
     $text =~ s/^#[^\n]*?\n//smg;  # remove numbered points
     $text =~ s/^:[^\n]*?\n//smg;  # remove : points
     $text =~ s/^;[^\n]*?\n//smg;  # remove ; points
-    $text =~ s/^|[^\n]*?\n//smg;  # remove infobox lines that didn't get taken out before
+    $text =~ s/^\|[^\n]*?\n//smg;  # remove infobox lines that didn't get taken out before
    
-    # remove quotes
-    $text =~ s/''//g;
-    $text =~ s/"//g;
-    $text =~ s/“//g;
-    $text =~ s/”//g;
-    
-    # remove everything in parens
-    $text =~ s/([^\[]*?)\[[^\]]*?\](.*?)/$1 $2/sg;
-    $text =~ s/([^\(]*?)\([^\)]*?\)(.*?)/$1 $2/sg;
+    # uniform quotes
+    $text =~ s/''/"/g;
+    $text =~ s/“/"/g;
+    $text =~ s/”/"/g;
     
     # beginning and endings
-#    $text =~ s/^[^\n]*?\:\n//smg;  # ending with :
     $text =~ s/^\s+?([^\n]*?\n)/$1/smg;  # chomp initial whitespace
     $text =~ s/^([^\n]*?\n)\s+?\n/$1/smg;  # chomp terminal whitespace
     $text =~ s/^([^\n]*?)\s+?\n/$1\n/smg;  # extra spaces before \n
     $text =~ s/^[^\n]*?[^\.\?!]\n//smg;  # delete not ending with punct
     
-    #titles (covered by not ending in punct)
+    #titles (already covered by not ending in punct)
 #    $text =~ s/^=+?[^=]+?=+?\s*?\n//sgm;
        
    
