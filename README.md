@@ -1,7 +1,9 @@
 # textAnalysis
 This repository is for stuff for processing wikipedia text.  We start with Wikipedia XML dump files.  There are already parsing libraries such as [Parse::MediaWikiDump](http://search.cpan.org/dist/Parse-MediaWikiDump/) for Perl.  There is a nice comment about this library as well as the impossibility of parsing Wikipedia XML at http://stackoverflow.com/questions/2588795/which-module-should-i-use-to-parse-mediawiki-text-into-a-perl-data-structure.
 
-Nonetheless, my goal is to get **a corpus of English sentences for training machine learning algorithms**.  I'm not going to parse for higher level structures, but might later in my learning algorithms.  I really just want a simple text process to get rid of stuff that would make the text too complicated.  Here, I have some notes about the code I've created for processing. I welcome feedback about the code, other issues that could/should be covered.
+Nonetheless, my goal is to generate **a corpus of English sentences for training machine learning algorithms**.  I'm not going to parse metadata for higher level structures, but might later in my learning algorithms.  I really just want a simple text process to get rid of stuff that would make the text too complicated.  Here, I have some notes about the code I've created for processing. I welcome feedback about the code, other issues that could/should be covered.
+
+Main product here right now is the perl script [`clean.pl`](https://github.com/ultradian/textAnalysis/blob/master/clean.pl) which will clean a wikidump.  I tried to make a Julia equivalent ([`clean.jl`](https://github.com/ultradian/textAnalysis/blob/master/clean.jl)), but the regex creates a different output, and I haven't had time to figure that out yet.  I plan to add more info below when I figure this out...
 
 ## Organization
 * [Getting Wiki dump files](#getting-wiki-dump-files)
